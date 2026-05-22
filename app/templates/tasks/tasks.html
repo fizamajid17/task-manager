@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block title %}Board — TaskBoard{% endblock %}
+{% block content %}
+
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="stat-num">{{ total }}</div>
+      <div class="stat-label">Total tasks</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="stat-num" style="color:#00875a;">{{ done|length }}</div>
+      <div class="stat-label">Completed</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="stat-num" style="color:#974f0c;">{{ inprogress|length }}</div>
+      <div class="stat-label">In progress</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="stat-num" style="color:#bf2600;">{{ overdue }}</div>
+      <div class="stat-label">Overdue</div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+
+  <!-- TO DO -->
+  <div class="col-md-4">
+    <div class="board-col">
+      <div class="board-col-title">To Do <span class="ms-1">{{ todo|length }}</span></div>
+      {% for task in todo %}
+      <div class="task-card">
+        <div class="task-title">{{ task.title }}</div>
+        <div class="task-meta d-flex justify-content-between align-items-center">
+          <span class="badge badge-{{ task.priority }}">{{ task.priority }}</span>
+          {% if task.due_date %}
+            <span>📅 {{ task.due_date.strftime('%b %d') }}</span>
+          {% endif %}
+        </div>
+        <div class="mt-2 d-flex gap-1 flex-wrap">
+          <form method="POST" action="{{ url_for('tasks.update_status', task_id=task.id, new_status='inprogress') }}">
+            <button class="btn btn-sm btn-outline-primary" style="font-size:0.72rem;">▶ Start</button>
+          </form>
+          <a href="{{ url_for('tasks.edit_task', task_id=task.id) }}" class="btn btn-sm btn-outline-secondary" style="font-size:0.72rem;">Edit</a>
+          <form method="POST" action="{{ url_for('tasks.delete_task', task_id=task.id) }}" onsubmit="return confirm('Delete this task?')">
+            <button class="btn btn-sm btn-outline-danger" style="font-size:0.72rem;">Delete</button>
+          </form>
+        </div>
+      </div>
+      {% else %}
+        <p class="text-muted" style="font-size:0.82rem;">No tasks here</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- IN PROGRESS -->
+  <div class="col-md-4">
+    <div class="board-col">
+      <div class="board-col-title">In Progress <span class="ms-1">{{ inprogress|length }}</span></div>
+      {% for task in inprogress %}
+      <div class="task-card">
+        <div class="task-title">{{ task.title }}</div>
+        <div class="task-meta d-flex justify-content-between align-items-center">
+          <span class="badge badge-{{ task.priority }}">{{ task.priority }}</span>
+          {% if task.due_date %}
+            <span>📅 {{ task.due_date.strftime('%b %d') }}</span>
+          {% endif %}
+        </div>
+        <div class="mt-2 d-flex gap-1 flex-wrap">
+          <form method="POST" action="{{ url_for('tasks.update_status', task_id=task.id, new_status='done') }}">
+            <button class="btn btn-sm btn-outline-success" style="font-size:0.72rem;">✓ Done</button>
+          </form>
+          <a href="{{ url_for('tasks.edit_task', task_id=task.id) }}" class="btn btn-sm btn-outline-secondary" style="font-size:0.72rem;">Edit</a>
+          <form method="POST" action="{{ url_for('tasks.delete_task', task_id=task.id) }}" onsubmit="return confirm('Delete this task?')">
+            <button class="btn btn-sm btn-outline-danger" style="font-size:0.72rem;">Delete</button>
+          </form>
+        </div>
+      </div>
+      {% else %}
+        <p class="text-muted" style="font-size:0.82rem;">No tasks here</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- DONE -->
+  <div class="col-md-4">
+    <div class="board-col">
+      <div class="board-col-title">Done <span class="ms-1">{{ done|length }}</span></div>
+      {% for task in done %}
+      <div class="task-card" style="opacity:0.75;">
+        <div class="task-title" style="text-decoration:line-through;">{{ task.title }}</div>
+        <div class="task-meta d-flex justify-content-between align-items-center">
+          <span class="badge badge-{{ task.priority }}">{{ task.priority }}</span>
+          {% if task.due_date %}
+            <span>📅 {{ task.due_date.strftime('%b %d') }}</span>
+          {% endif %}
+        </div>
+        <div class="mt-2 d-flex gap-1">
+          <form method="POST" action="{{ url_for('tasks.delete_task', task_id=task.id) }}" onsubmit="return confirm('Delete this task?')">
+            <button class="btn btn-sm btn-outline-danger" style="font-size:0.72rem;">Delete</button>
+          </form>
+        </div>
+      </div>
+      {% else %}
+        <p class="text-muted" style="font-size:0.82rem;">No tasks here</p>
+      {% endfor %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}
